@@ -13,14 +13,14 @@ func TestEncodeMessage(t *testing.T) {
 	segments := []segment{
 		{head: head{kind: "HNHBK", number: 1, version: 3, reference: 0}, elements: []element{{text("")}, {text("300")}, {text("0")}, {number(1)}}},
 		{head: head{kind: "HKIDN", number: 2, version: 2, reference: 0}, elements: []element{{text("280"), text("12345678")}, {text("9999999999")}, {text("0")}, {text("0")}}},
-		{head: head{kind: "HKVVB", number: 3, version: 3, reference: 0}, elements: []element{{text("0")}, {text("0")}, {text("0")}, {text("PRODUKT")}, {text("1.0")}}},
+		{head: head{kind: "HKVVB", number: 3, version: 3, reference: 0}, elements: []element{{text("0")}, {text("0")}, {text("0")}, {text("PRODUCT")}, {text("1.0")}}},
 		{head: head{kind: "HNHBS", number: 4, version: 1, reference: 0}, elements: []element{{number(1)}}},
 	}
 	got, err := encodeMessage(segments)
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := "HNHBK:1:3+000000000109+300+0+1'HKIDN:2:2+280:12345678+9999999999+0+0'HKVVB:3:3+0+0+0+PRODUKT+1.0'HNHBS:4:1+1'"
+	want := "HNHBK:1:3+000000000109+300+0+1'HKIDN:2:2+280:12345678+9999999999+0+0'HKVVB:3:3+0+0+0+PRODUCT+1.0'HNHBS:4:1+1'"
 	if string(got) != want || len(want) != 109 {
 		t.Errorf("got %s", got)
 	}

@@ -53,7 +53,7 @@ func TestFirstAccounts(t *testing.T) {
 	if sync.field(2, 0) != "0" || b.sent(0, "HNSHK").field(1, 0) != oneStep || b.sent(0, "HKSYN").field(0, 0) != "0" {
 		t.Errorf("the synchronization sent %+v", b.received[0])
 	}
-	if b.sent(0, "HNSHA").field(2, 0) != "geheim" || b.sent(0, "HKVVB").field(3, 0) != "PRODUKT" {
+	if b.sent(0, "HNSHA").field(2, 0) != "geheim" || b.sent(0, "HKVVB").field(3, 0) != "PRODUCT" {
 		t.Error("the first message lacks the PIN or the product ID")
 	}
 	if b.sent(1, "HNHBK").field(2, 0) != "DIALOG:1" || b.sent(1, "HNHBK").field(3, 0) != "2" {
@@ -93,7 +93,7 @@ func TestTransactions(t *testing.T) {
 	account := Account{IBAN: "DE02120300000000202051", BIC: "GENODEM1GTL", Number: "202051", SubAccount: "", BankCode: "12345678"}
 	b := newBank(t,
 		with(bankParams("10"), returns("HIRMS", code("3076", "Starke Kundenauthentifizierung nicht notwendig."))),
-		[]segment{returns("HIRMS", code("3076", "Keine starke Authentifizierung erforderlich."), code("3040", "Es liegen weitere Informationen vor.", "SEITE2")),
+		[]segment{returns("HIRMS", code("3076", "Keine starke Authentifizierung erforderlich."), code("3040", "Weitere Daten abrufbar.", "SEITE2")),
 			newSegment("HICAZ", 1, accountElement(account), element{text("urn:iso:std:iso:20022:tech:xsd:camt.052.001.08")}, element{binary([]byte(first))})},
 		[]segment{returns("HIRMS", code("0020", "Der Auftrag wurde ausgeführt.")),
 			newSegment("HICAZ", 1, accountElement(account), element{text("urn:iso:std:iso:20022:tech:xsd:camt.052.001.02")}, element{binary([]byte(second))})},
@@ -254,7 +254,7 @@ func TestTransport(t *testing.T) {
 			w.WriteHeader(test.status)
 			_, _ = w.Write([]byte(test.body))
 		}))
-		c = New(server.URL, "12345678", "kunde", "geheim", "PRODUKT")
+		c = New(server.URL, "12345678", "kunde", "geheim", "PRODUCT")
 		_, err = c.Accounts()
 		server.Close()
 		if err == nil || !strings.Contains(err.Error(), test.want) {

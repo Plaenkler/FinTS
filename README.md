@@ -6,7 +6,7 @@
 [![Checks](https://github.com/Plaenkler/FinTS/actions/workflows/checks.yml/badge.svg)](https://github.com/Plaenkler/FinTS/actions/workflows/checks.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/plaenkler/fints.svg)](https://pkg.go.dev/github.com/plaenkler/fints)
 
-Read-only Go client for [FinTS 3.0](https://www.fints.org) PIN/TAN. It lists accounts and fetches transactions, it has no functions for payments. It uses only the standard library.
+Read-only Go client for [FinTS 3.0](https://www.fints.org) PIN/TAN, it has no functions for payments. It uses only the standard library.
 
 ## Installation
 
@@ -24,13 +24,6 @@ if err != nil {
 }
 log.Print(accounts[0].IBAN)
 ```
-
-The product ID is the registration number of the software at the [Deutsche Kreditwirtschaft](https://www.fints.org), banks reject software without one.
-
-- Each call opens a dialog and closes it again. The first call fetches the customer system ID, the TAN procedure and the TAN medium into `State`, a program saves it for the next call.
-- When the bank asks for an approval in the TAN app, `Approve` is called with its text and the client waits until it is given.
-- A response with a return code starting with 9 is returned as `*fints.Error`. The client never repeats a request after an error, so a wrong PIN costs exactly one attempt.
-- The client is not safe for concurrent use and works without `context`.
 
 ## Example
 

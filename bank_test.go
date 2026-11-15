@@ -89,7 +89,7 @@ func (b *bank) sent(i int, kind string) segment {
 }
 
 func testClient(b *bank) (*Client, *[]time.Duration) {
-	c := New(b.server.URL, "12345678", "kunde", "geheim", "PRODUKT")
+	c := New(b.server.URL, "12345678", "kunde", "geheim", "PRODUCT")
 	c.now = func() time.Time {
 		return time.Date(2026, 11, 15, 10, 30, 0, 0, time.UTC)
 	}

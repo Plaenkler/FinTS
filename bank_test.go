@@ -89,7 +89,7 @@ func (b *bank) sent(i int, kind string) segment {
 }
 
 func testClient(b *bank) (*Client, *[]time.Duration) {
-	c := New(b.server.URL, "12345678", "kunde", "geheim", "PRODUCT")
+	c := New(b.server.URL, "12345678", "kunde", "geheim", testProduct)
 	c.now = func() time.Time {
 		return time.Date(2026, 11, 15, 10, 30, 0, 0, time.UTC)
 	}
@@ -161,3 +161,6 @@ func medium(name string, status string) element {
 	e[mediumName] = text(name)
 	return e
 }
+
+// testProduct has the length of a registration number, a real one must not be published.
+const testProduct = "0000000000000000000000000"

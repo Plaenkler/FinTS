@@ -3,7 +3,6 @@ package fints
 import (
 	"bytes"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -13,6 +12,8 @@ import (
 
 // maxResponse limits what a bank may send, a year of camt transactions stays far below it.
 const maxResponse = 64 << 20
+
+const productIDLength = 25
 
 // Client reads from one online banking access. Each call opens its own dialog and closes it again.
 // It is not safe for concurrent use, the bank allows one dialog per access at a time.
@@ -94,8 +95,9 @@ func (c *Client) customerID() string {
 
 // post sends a message as base64, the transport FinTS defines for HTTPS.
 func (c *Client) post(message []byte) ([]byte, error) {
-	if c.ProductID == "" {
-		return nil, errors.New("fints: the product ID of the registration is missing")
+	// The Deutsche Kreditwirtschaft issues 25 characters and forbids sending more or less.
+	if len(c.ProductID) != productIDLength {
+		return nil, fmt.Errorf("fints: the product ID of the registration has %d characters, not %d", len(c.ProductID), productIDLength)
 	}
 	body := base64.StdEncoding.EncodeToString(message)
 	response, err := c.HTTPClient.Post(c.URL, "application/octet-stream", strings.NewReader(body))

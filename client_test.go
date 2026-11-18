@@ -53,7 +53,7 @@ func TestFirstAccounts(t *testing.T) {
 	if sync.field(2, 0) != "0" || b.sent(0, "HNSHK").field(1, 0) != oneStep || b.sent(0, "HKSYN").field(0, 0) != "0" {
 		t.Errorf("the synchronization sent %+v", b.received[0])
 	}
-	if b.sent(0, "HNSHA").field(2, 0) != "geheim" || b.sent(0, "HKVVB").field(3, 0) != "PRODUCT" {
+	if b.sent(0, "HNSHA").field(2, 0) != "geheim" || b.sent(0, "HKVVB").field(3, 0) != testProduct {
 		t.Error("the first message lacks the PIN or the product ID")
 	}
 	if b.sent(1, "HNHBK").field(2, 0) != "DIALOG:1" || b.sent(1, "HNHBK").field(3, 0) != "2" {
@@ -254,7 +254,7 @@ func TestTransport(t *testing.T) {
 			w.WriteHeader(test.status)
 			_, _ = w.Write([]byte(test.body))
 		}))
-		c = New(server.URL, "12345678", "kunde", "geheim", "PRODUCT")
+		c = New(server.URL, "12345678", "kunde", "geheim", testProduct)
 		_, err = c.Accounts()
 		server.Close()
 		if err == nil || !strings.Contains(err.Error(), test.want) {

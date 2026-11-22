@@ -119,7 +119,7 @@ func TestTransactions(t *testing.T) {
 		t.Errorf("the client waited %v without an approval", *waits)
 	}
 	request := b.sent(1, "HKCAZ")
-	if request.field(0, 1) != account.IBAN || request.field(1, 0) != "urn:iso:std:iso:20022:tech:xsd:camt.052.001.08" ||
+	if request.field(0, 0) != account.IBAN || request.field(0, 4) != "280" || request.field(1, 0) != "urn:iso:std:iso:20022:tech:xsd:camt.052.001.08" ||
 		request.field(3, 0) != "20261101" || request.field(4, 0) != "20261115" || request.field(6, 0) != "" {
 		t.Errorf("the first request was %+v", request.elements)
 	}
@@ -212,6 +212,21 @@ func TestChooseMethod(t *testing.T) {
 		if got != test.want || (test.err == "" && err != nil) || (test.err != "" && (err == nil || !strings.Contains(err.Error(), test.err))) {
 			t.Errorf("%v: got %q, %v", test.allowed, got, err)
 		}
+	}
+}
+
+// TestLatin1Camt reads a report in ISO 8859-1, as the Volksbanken send it.
+func TestLatin1Camt(t *testing.T) {
+	data := "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><Document><BkToCstmrAcctRpt><Rpt><Ntry><Amt Ccy=\"EUR\">12</Amt>" +
+		"<CdtDbtInd>CRDT</CdtDbtInd><BookgDt><Dt>2026-11-20</Dt></BookgDt><NtryDtls><TxDtls><RltdPties><Dbtr><Nm>J\xfcrgen M\xfcller</Nm>" +
+		"</Dbtr></RltdPties></TxDtls></NtryDtls></Ntry></Rpt></BkToCstmrAcctRpt></Document>"
+	transactions, err := readCamt052([]byte(data))
+	if err != nil || len(transactions) != 1 || transactions[0].Name != "Jürgen Müller" {
+		t.Fatalf("got %+v, %v", transactions, err)
+	}
+	_, err = readCamt052([]byte(`<?xml version="1.0" encoding="UTF-16"?><Document/>`))
+	if err == nil {
+		t.Error("an unknown encoding was accepted")
 	}
 }
 

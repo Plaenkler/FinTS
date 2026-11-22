@@ -1,9 +1,11 @@
 package fints
 
 import (
+	"bytes"
 	"encoding/xml"
 	"errors"
 	"fmt"
+	"io"
 	"strconv"
 	"strings"
 	"time"
@@ -107,9 +109,27 @@ type camtParty struct {
 	PartyName string `xml:"Pty>Nm"`
 }
 
+// charsetReader converts ISO 8859-1 to UTF-8, the Volksbanken declare their camt reports in it.
+func charsetReader(label string, input io.Reader) (io.Reader, error) {
+	if !strings.EqualFold(label, "ISO-8859-1") && !strings.EqualFold(label, "latin1") {
+		return nil, fmt.Errorf("fints: camt.052 in %s is not supported", label)
+	}
+	data, err := io.ReadAll(input)
+	if err != nil {
+		return nil, fmt.Errorf("fints: %w", err)
+	}
+	runes := make([]rune, 0, len(data))
+	for _, b := range data {
+		runes = append(runes, rune(b))
+	}
+	return strings.NewReader(string(runes)), nil
+}
+
 func readCamt052(data []byte) ([]Transaction, error) {
 	var document camtDocument
-	err := xml.Unmarshal(data, &document)
+	decoder := xml.NewDecoder(bytes.NewReader(data))
+	decoder.CharsetReader = charsetReader
+	err := decoder.Decode(&document)
 	if err != nil {
 		return nil, fmt.Errorf("fints: camt.052: %w", err)
 	}

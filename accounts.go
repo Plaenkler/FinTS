@@ -40,6 +40,7 @@ func readAccount(e element) Account {
 	return Account{IBAN: valueAt(e, 1), BIC: valueAt(e, 2), Number: valueAt(e, 3), SubAccount: valueAt(e, 4), BankCode: valueAt(e, 6)}
 }
 
+// accountElement writes the account connection of the orders, which has no SEPA flag unlike HISPA.
 func accountElement(a Account) element {
-	return element{text("J"), text(a.IBAN), text(a.BIC), text(a.Number), text(a.SubAccount), text("280"), text(a.BankCode)}
+	return element{text(a.IBAN), text(a.BIC), text(a.Number), text(a.SubAccount), text("280"), text(a.BankCode)}
 }

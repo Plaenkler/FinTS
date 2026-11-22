@@ -36,3 +36,13 @@ for _, t := range transactions {
     log.Print(t.Amount, t.Name, t.Purpose) // cents, negative for a debit
 }
 ```
+
+## Tested banks
+
+The library follows the FinTS 3.0 standard and is meant for any German bank with PIN/TAN, but it was only tried with these:
+
+| Bank | Server | Accounts | Transactions | Approval in the TAN app |
+| --- | --- | --- | --- | --- |
+| Volksbank in Ostwestfalen eG | Atruvia | Yes | Yes | Not yet requested |
+
+Other banks may answer differently, an issue with the masked messages helps to support them.
